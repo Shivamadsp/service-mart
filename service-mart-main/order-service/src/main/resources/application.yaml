@@ -1,0 +1,64 @@
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/orderdb
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+  application:
+    name: ORDER-SERVICE
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8289}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-01639223.okta.com/oauth2/default
+      client:
+        registration:
+          internal-client: # name of the client
+            provider: okta
+            authorization-grant-type: client_credentials
+            scope: internal
+            client-id: 0oa8rmulcyYrQWFYh5d7
+            client-secret: kYn3fh0vz1vQ3_lBlwqRKWnk8zr1DrnE2AGtjpck
+          provider:
+            okta:
+              issuer-uri: https://dev-01639223.okta.com/oauth2/default
+
+
+#commented below configuration as we will be using it from config server
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
+
+#Resilinece4j Properties
+  resilience4j:
+    circuitbreaker:
+      instances:
+        external:
+          registerHealthIndicator: true
+          event-consumer-buffer-size: 10
+          slidingWindowType: COUNT_BASED
+          slidingWindowSize: 5
+          failureRateThreshold: 50
+          waitDurationInOpenState: 5s
+          permittedNumberOfCallsInHalfOpenState: 3
+          automaticTransitionFromOpenToHalfOpenEnabled: true
+    timelimiter:
+      instances:
+        external:
+          timeout-duration: 3s
+    retry:
+      instances:
+        external:
+          max-attempts: 3
+          wait-duration: 5s

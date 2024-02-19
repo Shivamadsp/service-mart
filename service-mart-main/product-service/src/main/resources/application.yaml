@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:3306/productdb
+    username: root
+    password: root
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+  application:
+    name: PRODUCT-SERVICE
+  config:
+    import: configserver:${CONFIG_SERVER_URL:http://localhost:8289}
+
+
+# ${ENVIRONMENT_VARIABLE} if environment variable present it will use it else the second param
+#commented below configuration as we will be using it from config server
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
